@@ -1,0 +1,13 @@
+name: audio-normalize
+arch: ${GOARCH}
+platform: linux
+version: 0.1.0
+section: utils
+maintainer: Mark Ivory <markivory2973@gmail.com>
+description: Normalize the loudness of audio by FFmpeg.
+vendor: GoReleaser
+homepage: https://github.com/MarkIvory2973/audio-normalize
+license: GPL-3.0-only
+contents:
+  - src: dist/output
+    dst: /usr/bin/audio-normalize

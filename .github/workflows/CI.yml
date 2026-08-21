@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  push:
+    tags: v*.*.*
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@main
+
+      - name: Install Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: src/go.mod
+          cache-dependency-path: src/go.sum
+
+      - name: Install dependencies
+        run: make install
+
+      - name: Test units
+        run: make test
+
+  build:
+    needs: test
+    name: Build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ linux, windows, darwin ]
+        arch: [ arm64, amd64, 386 ]
+        exclude:
+          - os: darwin
+            arch: 386
+    steps:
+      - uses: actions/checkout@main
+
+      - name: Install Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: src/go.mod
+          cache-dependency-path: src/go.sum
+      
+      - name: Install nFPM
+        run: go install github.com/goreleaser/nfpm/v2/cmd/nfpm@latest
+
+      - name: Install dependencies
+        run: make install
+
+      - name: Build binaries
+        env:
+          GOOS: ${{ matrix.os }}
+          GOARCH: ${{ matrix.arch }}
+        run: make build
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: build_${{ matrix.os }}_${{ matrix.arch }}
+          path: dist/
+
+  release:
+    needs: build
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          path: dist
+          pattern: build_*_*
+          merge-multiple: true
+
+      - name: Release ${{ github.ref_name }}
+        uses: softprops/action-gh-release@v3
+        with:
+          draft: true
+          name: Audio Normalize ${{ github.ref_name }}
+          files: dist/*
