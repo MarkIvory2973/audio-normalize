@@ -7,26 +7,33 @@ import (
 )
 
 func main() {
-	input := cmd.GetInput()
+	inputs, err := cmd.GetInputs()
+	if err != nil {
+		logs.Fatal("cmd.GetInputs", "couldn't get inputs", err)
+		return
+	}
+
 	parameters := core.Parameters{
 		Loudness: cmd.GetI(),
 		TruePeak: cmd.GetTP(),
 		Range:    cmd.GetLRA(),
 	}
 
-	logs.Info("main", "analyzing the input file")
+	for _, input := range inputs {
+		logs.Info("main", "analyzing %q", input)
 
-	analysis, err := core.Analyze(input, parameters)
-	if err != nil {
-		logs.Fatal("core.Analyze", "couldn't analyze the input file", err)
-		return
-	}
+		analysis, err := core.Analyze(input, parameters)
+		if err != nil {
+			logs.Fatal("core.Analyze", "couldn't analyze %q", err, input)
+			return
+		}
 
-	logs.Info("main", "normalizing the input file")
+		logs.Info("main", "normalizing %q", input)
 
-	err = core.Normalize(input, parameters, analysis)
-	if err != nil {
-		logs.Fatal("core.Normalize", "couldn't normalize the input file", err)
-		return
+		err = core.Normalize(input, parameters, analysis)
+		if err != nil {
+			logs.Fatal("core.Normalize", "couldn't normalize %q", err, input)
+			return
+		}
 	}
 }

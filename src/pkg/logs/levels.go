@@ -5,22 +5,25 @@ import (
 	"os"
 )
 
-func Info(scope string, message string) {
+func Info(scope string, format string, arguments ...any) {
+	message := fmt.Sprintf(format, arguments...)
 	fmt.Fprintf(os.Stdout, "info(%s): %s\n", scope, message)
 }
 
-func Warning(scope string, message string, err error) {
+func Warning(scope string, format string, err error, arguments ...any) {
 	if err != nil {
-		message = fmt.Sprintf("%s: %v", message, err)
+		format = fmt.Sprintf("%s: %v", format, err)
 	}
 
+	message := fmt.Sprintf(format, arguments...)
 	fmt.Fprintf(os.Stderr, "warning(%s): %s\n", scope, message)
 }
 
-func Fatal(scope string, message string, err error) {
+func Fatal(scope string, format string, err error, arguments ...any) {
 	if err != nil {
-		message = fmt.Sprintf("%s: %v", message, err)
+		format = fmt.Sprintf("%s: %v", format, err)
 	}
 
+	message := fmt.Sprintf(format, arguments...)
 	fmt.Fprintf(os.Stderr, "fatal(%s): %s\n", scope, message)
 }

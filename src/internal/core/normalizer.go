@@ -14,7 +14,8 @@ func Normalize(input string, parameters Parameters, analysis Analysis) error {
 		return err
 	}
 
-	output := filepath.Join("dist", input)
+	_, name := filepath.Split(input)
+	output := filepath.Join("dist", name)
 	filter := fmt.Sprintf("loudnorm=%s:%s:linear=true", parameters.String(), analysis.String())
 	err = ffmpeg_go.
 		Input(input, ffmpeg_go.KwArgs{
