@@ -56,3 +56,7 @@ Run the following command:
 ```bash
 ./audio-normalize -help
 ```
+
+## References
+
+1. [是你的错觉吗？视频音量为什么越来越响了](https://www.bilibili.com/video/BV1JsK5eyEGh/)
